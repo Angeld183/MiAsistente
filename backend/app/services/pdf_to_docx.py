@@ -1,29 +1,32 @@
+import subprocess
 import tempfile
 import os
-from pdf2docx import Converter
+from io import BytesIO
 
-def pdf_to_docx_stream(upload_file):
-    """
-    Convierte un archivo PDF recibido como UploadFile en un DOCX temporal.
-    Retorna la ruta del archivo DOCX generado.
-    """
+async def docx_to_pdf_stream(file) -> tuple[BytesIO, str]:
+    # Leer bytes del archivo subido
+    docx_bytes = await file.read()
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_pdf:
-        upload_file.file.seek(0)
-        tmp_pdf.write(upload_file.file.read())
-        tmp_pdf_path = tmp_pdf.name
+    # Guardar DOCX en archivo temporal
+    temp_dir = tempfile.mkdtemp()
+    docx_path = os.path.join(temp_dir, file.filename)
+    with open(docx_path, "wb") as f:
+        f.write(docx_bytes)
 
-    tmp_docx_path = tmp_pdf_path.replace(".pdf", ".docx")
+    # Ruta de salida PDF
+    pdf_path = docx_path.replace(".docx", ".pdf")
 
-    try:
-        cv = Converter(tmp_pdf_path)
-        cv.convert(tmp_docx_path, start=0, end=None)
-        cv.close()
-        return tmp_docx_path
+    # Ejecutar Pandoc para convertir DOCX → PDF
+    subprocess.run(
+        ["pandoc", docx_path, "-o", pdf_path],
+        check=True
+    )
 
-    except Exception as e:
-        raise RuntimeError(f"Error al convertir PDF a DOCX: {e}")
+    # Leer PDF generado en memoria
+    with open(pdf_path, "rb") as f:
+        pdf_bytes = f.read()
 
-    finally:
-        if os.path.exists(tmp_pdf_path):
-            os.remove(tmp_pdf_path)
+    pdf_stream = BytesIO(pdf_bytes)
+    pdf_stream.seek(0)
+
+    return pdf_stream, os.path.basename(pdf_path)
