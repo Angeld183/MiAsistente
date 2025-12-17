@@ -1,8 +1,7 @@
-# backend/app/services/pdf_to_docx.py
-import subprocess
 import tempfile
 import os
 from io import BytesIO
+from pdf2docx import Converter
 
 async def pdf_to_docx_stream(file) -> tuple[BytesIO, str]:
     # Leer bytes del archivo subido
@@ -17,11 +16,10 @@ async def pdf_to_docx_stream(file) -> tuple[BytesIO, str]:
     # Ruta de salida DOCX
     docx_path = pdf_path.replace(".pdf", ".docx")
 
-    # Ejecutar Pandoc para convertir PDF → DOCX
-    subprocess.run(
-        ["pandoc", pdf_path, "-o", docx_path],
-        check=True
-    )
+    # Convertir PDF → DOCX usando pdf2docx
+    cv = Converter(pdf_path)
+    cv.convert(docx_path, start=0, end=None)
+    cv.close()
 
     # Leer DOCX generado en memoria
     with open(docx_path, "rb") as f:
