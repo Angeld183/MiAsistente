@@ -1,23 +1,26 @@
-from docx2pdf import convert
-from io import BytesIO
+import subprocess
 import tempfile
 import os
+from io import BytesIO
 
 async def docx_to_pdf_stream(file) -> tuple[BytesIO, str]:
     # Leer bytes del archivo subido
     docx_bytes = await file.read()
 
-    # Crear archivo temporal .docx
+    # Guardar DOCX en archivo temporal
     temp_dir = tempfile.mkdtemp()
     docx_path = os.path.join(temp_dir, file.filename)
     with open(docx_path, "wb") as f:
         f.write(docx_bytes)
 
-    # Crear ruta de salida .pdf
+    # Ruta de salida PDF
     pdf_path = docx_path.replace(".docx", ".pdf")
 
-    # Convertir DOCX → PDF
-    convert(docx_path, pdf_path)
+    # Convertir DOCX → PDF usando Pandoc
+    subprocess.run(
+        ["pandoc", docx_path, "-o", pdf_path],
+        check=True
+    )
 
     # Leer el PDF generado en memoria
     with open(pdf_path, "rb") as f:
