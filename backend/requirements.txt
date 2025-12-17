@@ -1,5 +1,5 @@
 fastapi
 uvicorn[standard]
 python-multipart
-pdf2docx
+pandoc
 docx2pdf
