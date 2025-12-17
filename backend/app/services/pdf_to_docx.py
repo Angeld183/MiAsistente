@@ -1,32 +1,33 @@
+# backend/app/services/pdf_to_docx.py
 import subprocess
 import tempfile
 import os
 from io import BytesIO
 
-async def docx_to_pdf_stream(file) -> tuple[BytesIO, str]:
+async def pdf_to_docx_stream(file) -> tuple[BytesIO, str]:
     # Leer bytes del archivo subido
-    docx_bytes = await file.read()
+    pdf_bytes = await file.read()
 
-    # Guardar DOCX en archivo temporal
+    # Guardar PDF en archivo temporal
     temp_dir = tempfile.mkdtemp()
-    docx_path = os.path.join(temp_dir, file.filename)
-    with open(docx_path, "wb") as f:
-        f.write(docx_bytes)
+    pdf_path = os.path.join(temp_dir, file.filename)
+    with open(pdf_path, "wb") as f:
+        f.write(pdf_bytes)
 
-    # Ruta de salida PDF
-    pdf_path = docx_path.replace(".docx", ".pdf")
+    # Ruta de salida DOCX
+    docx_path = pdf_path.replace(".pdf", ".docx")
 
-    # Ejecutar Pandoc para convertir DOCX → PDF
+    # Ejecutar Pandoc para convertir PDF → DOCX
     subprocess.run(
-        ["pandoc", docx_path, "-o", pdf_path],
+        ["pandoc", pdf_path, "-o", docx_path],
         check=True
     )
 
-    # Leer PDF generado en memoria
-    with open(pdf_path, "rb") as f:
-        pdf_bytes = f.read()
+    # Leer DOCX generado en memoria
+    with open(docx_path, "rb") as f:
+        docx_bytes = f.read()
 
-    pdf_stream = BytesIO(pdf_bytes)
-    pdf_stream.seek(0)
+    docx_stream = BytesIO(docx_bytes)
+    docx_stream.seek(0)
 
-    return pdf_stream, os.path.basename(pdf_path)
+    return docx_stream, os.path.basename(docx_path)
