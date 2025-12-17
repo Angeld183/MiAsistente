@@ -1,4 +1,3 @@
-# app/main.py
 from fastapi import FastAPI
 from app.routes.convert import router as convert_router
 
