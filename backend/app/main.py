@@ -4,6 +4,8 @@ from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="Mi Asistente - Convertidor")
 
-# Todas las rutas de convert estarán bajo /convert
+# Rutas de backend
 app.include_router(convert_router, prefix="/convert")
+
+# Servir Angular en la raíz
 app.mount("/", StaticFiles(directory="app/static", html=True), name="frontend")
