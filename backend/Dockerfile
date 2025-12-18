@@ -1,10 +1,3 @@
-# Etapa de build del frontend Angular
-FROM node:20 AS frontend-build
-WORKDIR /frontend
-COPY frontend-web/frontend-web .
-RUN npm install
-RUN npm run build
-
 # Etapa de backend con Python
 FROM python:3.12-slim AS backend
 WORKDIR /app
@@ -16,9 +9,6 @@ RUN apt-get update && apt-get install -y pandoc texlive-latex-base texlive-xetex
 
 # Copiar código del backend
 COPY backend/app ./app
-
-# Copiar el build del frontend al backend
-COPY --from=frontend-build /frontend/dist/frontend-web ./app/static
 
 EXPOSE 8000
 
