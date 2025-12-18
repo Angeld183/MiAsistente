@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pandoc
+docx2pdf
+pdf2docx

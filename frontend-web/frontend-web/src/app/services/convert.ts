@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ConvertService {
-  private baseUrl = 'http://localhost:8000/convert';
+  private baseUrl = 'https://miasistente.onrender.com/docs';
 
   constructor(private http: HttpClient) {}
 
