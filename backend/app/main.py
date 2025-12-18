@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
 
-app = FastAPI(title="Mi Asistente - Convertidor")
+app = FastAPI(title="MiAsistente - Convertidor")
 
 # Rutas de backend
 app.include_router(convert_router, prefix="/convert")
