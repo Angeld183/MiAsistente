@@ -9,10 +9,10 @@ app = FastAPI(title="Mi Asistente - Convertidor")
 # Rutas de backend
 app.include_router(convert_router, prefix="/convert")
 
-# Servir archivos estáticos (Angular build) en /static
+# Monta los archivos estáticos en /static
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-# Fallback: devolver siempre index.html para rutas del frontend
+# Usa el fallback para servir Angular en cualquier ruta desconocida
 @app.get("/{full_path:path}")
 async def frontend_fallback(full_path: str):
     index_path = os.path.join("app", "static", "index.html")
